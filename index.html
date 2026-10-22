@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta property="og:title" content="Spooky Season — Halloween zine">
-<meta property="og:image" content="pages/p-01.jpg">
+<meta property="og:image" content="p-01.jpg">
 <title>Spooky Season</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -196,7 +196,7 @@ body {
     p.className = 'page';
     if (i === 1 || i === N) p.setAttribute('data-density', 'hard');
     var img = document.createElement('img');
-    img.src = 'pages/p-' + String(i).padStart(2, '0') + '.jpg';
+    img.src = 'p-' + String(i).padStart(2, '0') + '.jpg';
     img.alt = 'Страница ' + i;
     img.decoding = 'async';
     p.appendChild(img);
