@@ -163,6 +163,12 @@ body {
 @media (prefers-reduced-motion: reduce) {
   #book { transition: none; }
 }
+/* Phones: a filter on the whole book is re-rasterized on every page turn and
+   makes mobile webviews (Telegram's in-app browser) stutter or drop pages. */
+@media (max-width: 900px), (pointer: coarse) {
+  #book { filter: none; }
+  .page { background: #2a2433; }
+}
 
 /* clickable spots carried over from the PDF */
 .inner { position: absolute; inset: 0; }
@@ -335,9 +341,9 @@ body {
     minHeight: 200, maxHeight: 1800,
     showCover: true,
     usePortrait: true,
-    drawShadow: true,
+    drawShadow: !SMALL,
     maxShadowOpacity: .45,
-    flippingTime: reduce ? 250 : 850,
+    flippingTime: reduce ? 250 : (SMALL ? 600 : 850),
     mobileScrollSupport: false
   });
   pf.loadFromHTML(document.querySelectorAll('#book .page'));
