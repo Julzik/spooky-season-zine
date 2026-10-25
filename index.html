@@ -259,6 +259,21 @@ body {
   var counter = document.getElementById('counter');
   var fs = document.getElementById('fs');
 
+  // Phones (incl. Telegram's in-app browser) get lighter page files, and pages
+  // load only around the open spread: 18 full-size images at once exhaust the
+  // mobile webview's memory and pages stay blank.
+  var SMALL = window.matchMedia && matchMedia('(max-width: 900px), (pointer: coarse)').matches;
+  function pageSrc(n) {
+    return 'p-' + String(n).padStart(2, '0') + (SMALL ? '-m' : '') + '.jpg';
+  }
+  var imgs = [];
+  function loadAround(idx) {
+    for (var k = idx - 2; k <= idx + 5; k++) {
+      var im = imgs[k];
+      if (im && !im.getAttribute('src')) im.src = im.getAttribute('data-src');
+    }
+  }
+
   for (var i = 1; i <= N; i++) {
     var p = document.createElement('div');
     p.className = 'page';
@@ -266,9 +281,10 @@ body {
     var inner = document.createElement('div');
     inner.className = 'inner';
     var img = document.createElement('img');
-    img.src = 'p-' + String(i).padStart(2, '0') + '.jpg';
+    img.setAttribute('data-src', pageSrc(i));
     img.alt = 'Страница ' + i;
     img.decoding = 'async';
+    imgs.push(img);
     inner.appendChild(img);
     (LINKS[i] || []).forEach(function (l) {
       var a = document.createElement('a');
@@ -309,6 +325,7 @@ body {
     book.style.height = Math.floor(h) + 'px';
   }
   size();
+  loadAround(0);
 
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var pf = new St.PageFlip(book, {
@@ -327,6 +344,7 @@ body {
 
   function refresh() {
     var idx = pf.getCurrentPageIndex();
+    loadAround(idx);
     var land = pf.getOrientation() === 'landscape';
     var label;
     if (land && idx > 0 && idx < N - 1) {
@@ -354,6 +372,8 @@ body {
   pf.on('flip', refresh);
   pf.on('changeOrientation', refresh);
   pf.on('init', refresh);
+  // dragging a corner reveals the next page before 'flip' fires
+  pf.on('changeState', function () { loadAround(pf.getCurrentPageIndex()); });
   refresh();
 
   prev.addEventListener('click', function () { pf.flipPrev(); });
